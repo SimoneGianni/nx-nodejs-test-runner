@@ -70,7 +70,7 @@ nx test my-package
 |--------|------|---------|-------------|
 | `enableTsc` | boolean | `false` | Whether to enable TypeScript compilation (if disabled, tests will run directly from source) |
 | `useTsx` | boolean | `true` | Whether to use tsx instead of node for running TypeScript tests directly (recommended for most projects unless esbuild limitations require tsc) |
-| `enableJestCompat` | boolean | `true` | Whether to enable Jest compatibility via node-test-jest-compat (uses `--import node-test-jest-compat`) |
+| `enableJestCompat` | boolean | `true` | Whether to enable Jest compatibility via @simonegianni/node-test-jest-compat (uses `--import @simonegianni/node-test-jest-compat`) |
 | `imports` | string[] | | Additional modules to import before running tests (uses `--import` for each module) |
 | `reporter` | string | `default` | Test reporter to use (e.g., 'default', 'spec', 'tap', 'dot', or a path to a custom reporter) (uses `--test-reporter`) |
 | `testFiles` | string | `**/*.test.{js,ts}` | Glob pattern for test files |
@@ -124,7 +124,7 @@ We recommend using tsx (the default) for most projects, as it provides the best 
 
 ### Jest Compatibility (Optional)
 
-Jest compatibility is enabled by default (`enableJestCompat: true`). This executor uses [node-test-jest-compat](https://github.com/SimoneGianni/node-test-jest-compat) to provide compatibility with Jest syntax, allowing you to:
+Jest compatibility is enabled by default (`enableJestCompat: true`). This executor uses [@simonegianni/node-test-jest-compat](https://github.com/SimoneGianni/node-test-jest-compat) to provide compatibility with Jest syntax, allowing you to:
 
 - Use Jest's `describe`, `it`, `test`, `beforeEach`, `afterEach`, etc.
 - Use Jest's `expect` assertions

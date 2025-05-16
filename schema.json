@@ -17,7 +17,7 @@
     },
     "enableJestCompat": {
       "type": "boolean",
-      "description": "Whether to enable Jest compatibility via node-test-jest-compat",
+      "description": "Whether to enable Jest compatibility via @simonegianni/node-test-jest-compat",
       "default": true
     },
     "imports": {
