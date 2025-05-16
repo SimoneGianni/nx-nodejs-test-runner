@@ -16,6 +16,13 @@ export interface NodeTestExecutorOptions {
   enableTsc?: boolean;
   
   /**
+   * Whether to use tsx instead of node for running TypeScript tests directly
+   * Recommended for most projects unless esbuild limitations require tsc
+   * @default true
+   */
+  useTsx?: boolean;
+  
+  /**
    * Whether to enable Jest compatibility via node-test-jest-compat
    * @default true
    */
@@ -314,16 +321,21 @@ export default async function runExecutor(
       }
     }
     
+    // Determine whether to use tsx or node
+    const useTsx = !shouldCompileTypeScript && options.useTsx !== false;
+    
     // Build the command to run the tests
-    let command = 'node';
+    let command = useTsx ? 'tsx' : 'node';
 
-    // Prevent node warnings
-    if (!options.verbose) {
+    // Prevent node warnings (only for node, not needed for tsx)
+    if (!options.verbose && !useTsx) {
       command += ' --no-warnings';
     }
     
-    // Enable source maps for better debugging
-    command += ' --enable-source-maps';
+    // Enable source maps for better debugging (only for node, tsx has this built-in)
+    if (!useTsx) {
+      command += ' --enable-source-maps';
+    }
     
     // Add test command
     command += ' --test';

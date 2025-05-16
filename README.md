@@ -2,6 +2,8 @@
 
 An Nx executor for running tests using Node.js's built-in test runner with TypeScript support and Jest compatibility.
 
+It is (almost) a drop-in replacement for Jest's test runner, allowing you to run your tests using Node.js's built-in test runner while still using Jest's syntax both in the test files and in the nx executor configuration.
+
 ## Features
 
 - Uses Node.js built-in test runner for fast, native test execution
@@ -67,6 +69,7 @@ nx test my-package
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `enableTsc` | boolean | `false` | Whether to enable TypeScript compilation (if disabled, tests will run directly from source) |
+| `useTsx` | boolean | `true` | Whether to use tsx instead of node for running TypeScript tests directly (recommended for most projects unless esbuild limitations require tsc) |
 | `enableJestCompat` | boolean | `true` | Whether to enable Jest compatibility via node-test-jest-compat (uses `--import node-test-jest-compat`) |
 | `imports` | string[] | | Additional modules to import before running tests (uses `--import` for each module) |
 | `reporter` | string | `default` | Test reporter to use (e.g., 'default', 'spec', 'tap', 'dot', or a path to a custom reporter) (uses `--test-reporter`) |
@@ -92,24 +95,32 @@ nx test my-package
 
 This executor provides several key features to enhance your testing experience:
 
-### TypeScript Compilation (Optional)
+### TypeScript Support
 
-By default, TypeScript compilation is disabled (`enableTsc: false`). In this mode, the executor will run JavaScript test files directly from the project directory.
+This executor provides three ways to run TypeScript tests:
 
-If you enable TypeScript compilation (`enableTsc: true`), the executor will:
-1. Compile your TypeScript tests using the specified tsconfig
-2. Resolve path aliases using tsc-alias (if enabled)
-3. Run the compiled JavaScript tests from the output directory
+1. **Using tsx (Recommended)**: By default, the executor uses [tsx](https://github.com/privatenumber/tsx) to run TypeScript tests directly (`useTsx: true`). This is powered by esbuild, which is much faster than traditional TypeScript compilation and works for most projects. It handles TypeScript files, path aliases, and other TypeScript features out of the box.
 
-If you need to run TypeScript test files without compilation, you can use the `imports` option to specify a TypeScript loader like `ts-node/register`:
+2. **Using TypeScript Compilation**: If you enable TypeScript compilation (`enableTsc: true`), the executor will:
+   - Compile your TypeScript tests using the specified tsconfig
+   - Resolve path aliases using tsc-alias (if enabled)
+   - Run the compiled JavaScript tests from the output directory
+   
+This approach is slower but may be necessary if your project has TypeScript features that esbuild cannot handle, like certain decorators or advanced type features.
+The compiled tests will be placed in the `outputDir` specified in the options.
 
-```json
-{
-  "imports": ["ts-node/register"]
-}
-```
 
-However, this has various limitations and may or may not work depending on your setup.
+3. **Using a Custom Loader**: If you disable both tsx and TypeScript compilation (`enableTsc: false`, `useTsx: false`), you can use the `imports` option to specify a TypeScript loader like `ts-node/register`:
+
+   ```json
+   {
+     "imports": ["ts-node/register"]
+   }
+   ```
+
+   However, this approach has various limitations and may not work depending on your setup.
+
+We recommend using tsx (the default) for most projects, as it provides the best balance of speed and compatibility.
 
 ### Jest Compatibility (Optional)
 
@@ -162,6 +173,23 @@ You can also specify a path to a custom reporter module.
       "executor": "@simonegianni/nx-nodejs-test-runner:nodejs-test",
       "options": {
         "enableTsc": true,
+        "tsConfig": "packages/my-package/tsconfig.spec.json",
+        "testFiles": "**/*.test.ts"
+      }
+    }
+  }
+}
+```
+
+### Using tsx for TypeScript Tests (Recommended)
+
+```json
+{
+  "targets": {
+    "test": {
+      "executor": "@simonegianni/nx-nodejs-test-runner:nodejs-test",
+      "options": {
+        "useTsx": true,
         "tsConfig": "packages/my-package/tsconfig.spec.json",
         "testFiles": "**/*.test.ts"
       }
