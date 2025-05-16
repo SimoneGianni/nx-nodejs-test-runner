@@ -23,7 +23,7 @@ export interface NodeTestExecutorOptions {
   useTsx?: boolean;
   
   /**
-   * Whether to enable Jest compatibility via node-test-jest-compat
+   * Whether to enable Jest compatibility via @simonegianni/node-test-jest-compat
    * @default true
    */
   enableJestCompat?: boolean;
@@ -342,7 +342,7 @@ export default async function runExecutor(
     
     // Add test adapter to provide compatibility with Jest/Vitest syntax if enabled
     if (options.enableJestCompat !== false) {
-      command += ' --import node-test-jest-compat';
+      command += ' --import @simonegianni/node-test-jest-compat';
     }
 
     // Add custom imports if specified
