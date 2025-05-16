@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "type": "object",
+  "cli": "nx",
+  "title": "Node Test Executor",
+  "description": "Runs tests using Node.js built-in test runner with TypeScript support and Jest compatibility",
+  "properties": {
+    "enableTsc": {
+      "type": "boolean",
+      "description": "Whether to enable TypeScript compilation (if disabled, tests will run directly from source)",
+      "default": false
+    },
+    "enableJestCompat": {
+      "type": "boolean",
+      "description": "Whether to enable Jest compatibility via node-test-jest-compat",
+      "default": true
+    },
+    "imports": {
+      "type": "array",
+      "description": "Additional modules to import before running tests",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reporter": {
+      "type": "string",
+      "description": "Test reporter to use (e.g., 'default', 'spec', 'tap', 'dot', or a path to a custom reporter)",
+      "default": "default"
+    },
+    "testFiles": {
+      "type": "string",
+      "description": "Glob pattern for test files",
+      "default": "**/*.test.{js,ts}"
+    },
+    "tsConfig": {
+      "type": "string",
+      "description": "Path to tsconfig file",
+      "default": "tsconfig.spec.json"
+    },
+    "useAlias": {
+      "type": "boolean",
+      "description": "Whether to use tsc-alias to resolve path aliases",
+      "default": true
+    },
+    "ignoreBuildErrors": {
+      "type": "boolean",
+      "description": "Whether to ignore TypeScript build errors",
+      "default": false
+    },
+    "verbose": {
+      "type": "boolean",
+      "description": "Whether to enable verbose logging",
+      "default": false
+    },
+    "coverage": {
+      "type": "boolean",
+      "description": "Collect coverage information",
+      "default": false
+    },
+    "additionalArgs": {
+      "type": "string",
+      "description": "Additional arguments to pass to the node test command"
+    },
+    "outputDir": {
+      "type": "string",
+      "description": "Custom output directory for compiled tests. If not specified, defaults to dist/test-out/{projectName}"
+    },
+    "experimental": {
+      "type": "boolean",
+      "description": "Whether to use experimental test features",
+      "default": false
+    },
+    "updateSnapshot": {
+      "type": "boolean",
+      "description": "Whether to update snapshots",
+      "default": false,
+      "alias": "u"
+    },
+    "testTimeout": {
+      "type": "number",
+      "description": "Default timeout of a test in milliseconds",
+      "default": 5000
+    },
+    "bail": {
+      "type": "boolean",
+      "description": "Exit the test suite immediately after the first failing test",
+      "default": false
+    },
+    "testNamePattern": {
+      "type": "string",
+      "description": "Run only tests with the specified name"
+    },
+    "testPathPattern": {
+      "type": "string",
+      "description": "Run only tests in files matching the specified pattern"
+    },
+    "maxWorkers": {
+      "type": "number",
+      "description": "Maximum number of workers to use for running tests"
+    },
+    "parallel": {
+      "type": "boolean",
+      "description": "Whether to run tests in parallel",
+      "default": true
+    }
+  },
+  "required": []
+}

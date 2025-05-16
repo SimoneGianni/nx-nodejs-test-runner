@@ -1,0 +1,9 @@
+{
+  "executors": {
+    "nodejs-test": {
+      "implementation": "./dist/esm/index.js",
+      "schema": "./schema.json",
+      "description": "Runs tests using Node.js built-in test runner with TypeScript support and Jest compatibility"
+    }
+  }
+}

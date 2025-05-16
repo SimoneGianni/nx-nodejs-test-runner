@@ -1,0 +1,67 @@
+{
+  "name": "@simonegianni/nx-nodejs-test-runner",
+  "version": "0.0.1",
+  "description": "Nx executor for running tests with Node.js built-in test runner with TypeScript support and Jest compatibility",
+  "author": "Simone Gianni",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SimoneGianni/nx-nodejs-test-runner"
+  },
+  "keywords": [
+    "nx",
+    "nx-plugin",
+    "node",
+    "test",
+    "testing",
+    "jest",
+    "typescript"
+  ],
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/esm/index.d.ts"
+    },
+    "./executors.json": "./executors.json"
+  },
+  "executors": "./executors.json",
+  "files": [
+    "dist",
+    "executors.json",
+    "schema.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc -p tsconfig.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "test": "echo \"No tests yet\""
+  },
+  "peerDependencies": {
+    "@nx/devkit": ">=16.0.0",
+    "node-test-jest-compat": ">=0.0.1",
+    "tsc-alias": ">=1.8.0"
+  },
+  "dependencies": {
+    "tslib": "^2.6.0"
+  },
+  "devDependencies": {
+    "@nx/devkit": "^18.0.0",
+    "@types/node": "^20.0.0",
+    "node-test-jest-compat": "^0.0.1",
+    "rimraf": "^5.0.0",
+    "tsc-alias": "^1.8.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
