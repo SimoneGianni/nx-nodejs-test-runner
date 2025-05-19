@@ -5,7 +5,7 @@
   "title": "Node Test Executor",
   "description": "Runs tests using Node.js built-in test runner with TypeScript support and Jest compatibility",
   "properties": {
-    "enableTsc": {
+    "useTsc": {
       "type": "boolean",
       "description": "Whether to enable TypeScript compilation (if disabled, tests will run directly from source)",
       "default": false
@@ -30,7 +30,7 @@
     "reporter": {
       "type": "string",
       "description": "Test reporter to use (e.g., 'default', 'spec', 'tap', 'dot', or a path to a custom reporter)",
-      "default": "default"
+      "default": "spec"
     },
     "testFiles": {
       "type": "string",
@@ -83,8 +83,7 @@
     },
     "testTimeout": {
       "type": "number",
-      "description": "Default timeout of a test in milliseconds",
-      "default": 5000
+      "description": "Default timeout of a test in milliseconds"
     },
     "bail": {
       "type": "boolean",

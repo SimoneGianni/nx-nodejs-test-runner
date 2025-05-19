@@ -68,11 +68,11 @@ nx test my-package
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `enableTsc` | boolean | `false` | Whether to enable TypeScript compilation (if disabled, tests will run directly from source) |
+| `useTsc` | boolean | `false` | Whether to enable TypeScript compilation (if disabled, tests will run directly from source) |
 | `useTsx` | boolean | `true` | Whether to use tsx instead of node for running TypeScript tests directly (recommended for most projects unless esbuild limitations require tsc) |
 | `enableJestCompat` | boolean | `true` | Whether to enable Jest compatibility via @simonegianni/node-test-jest-compat (uses `--import @simonegianni/node-test-jest-compat`) |
 | `imports` | string[] | | Additional modules to import before running tests (uses `--import` for each module) |
-| `reporter` | string | `default` | Test reporter to use (e.g., 'default', 'spec', 'tap', 'dot', or a path to a custom reporter) (uses `--test-reporter`) |
+| `reporter` | string | `spec` | Test reporter to use (e.g., 'default', 'spec', 'tap', 'dot', or a path to a custom reporter) (uses `--test-reporter`) |
 | `testFiles` | string | `**/*.test.{js,ts}` | Glob pattern for test files |
 | `tsConfig` | string | `tsconfig.spec.json` | Path to tsconfig file |
 | `useAlias` | boolean | `true` | Whether to use tsc-alias to resolve path aliases |
@@ -83,7 +83,7 @@ nx test my-package
 | `outputDir` | string | `dist/test-out/{projectName}` | Custom output directory for compiled tests |
 | `experimental` | boolean | `false` | Whether to use experimental test features (uses `--experimental-test-module-mocks`) |
 | `updateSnapshot` | boolean | `false` | Whether to update snapshots (alias: `u`) (uses `--test-update-snapshots`) |
-| `testTimeout` | number | `5000` | Default timeout of a test in milliseconds (uses `--test-timeout`) |
+| `testTimeout` | number | none | Default timeout of a test in milliseconds (uses `--test-timeout`) |
 | `bail` | boolean | `false` | Exit the test suite immediately after the first failing test (uses `--test-fail-fast`) |
 | `testNamePattern` | string | | Run only tests with the specified name (uses `--test-name-pattern`) |
 | `testPathPattern` | string | | Run only tests in files matching the specified pattern (uses `--test-path-pattern`) |
@@ -101,7 +101,7 @@ This executor provides three ways to run TypeScript tests:
 
 1. **Using tsx (Recommended)**: By default, the executor uses [tsx](https://github.com/privatenumber/tsx) to run TypeScript tests directly (`useTsx: true`). This is powered by esbuild, which is much faster than traditional TypeScript compilation and works for most projects. It handles TypeScript files, path aliases, and other TypeScript features out of the box.
 
-2. **Using TypeScript Compilation**: If you enable TypeScript compilation (`enableTsc: true`), the executor will:
+2. **Using TypeScript Compilation**: If you enable TypeScript compilation (`useTsc: true`), the executor will:
    - Compile your TypeScript tests using the specified tsconfig
    - Resolve path aliases using tsc-alias (if enabled)
    - Run the compiled JavaScript tests from the output directory
@@ -110,7 +110,7 @@ This approach is slower but may be necessary if your project has TypeScript feat
 The compiled tests will be placed in the `outputDir` specified in the options.
 
 
-3. **Using a Custom Loader**: If you disable both tsx and TypeScript compilation (`enableTsc: false`, `useTsx: false`), you can use the `imports` option to specify a TypeScript loader like `ts-node/register`:
+3. **Using a Custom Loader**: If you disable both tsx and TypeScript compilation (`useTsc: false`, `useTsx: false`), you can use the `imports` option to specify a TypeScript loader like `ts-node/register`:
 
    ```json
    {
@@ -172,7 +172,7 @@ You can also specify a path to a custom reporter module.
     "test": {
       "executor": "@simonegianni/nx-nodejs-test-runner:nodejs-test",
       "options": {
-        "enableTsc": true,
+        "useTsc": true,
         "tsConfig": "packages/my-package/tsconfig.spec.json",
         "testFiles": "**/*.test.ts"
       }

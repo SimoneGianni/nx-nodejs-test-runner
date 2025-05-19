@@ -13,7 +13,7 @@ export interface NodeTestExecutorOptions {
    * If disabled, tests will run directly from source
    * @default false
    */
-  enableTsc?: boolean;
+  useTsc?: boolean;
   
   /**
    * Whether to use tsx instead of node for running TypeScript tests directly
@@ -35,7 +35,7 @@ export interface NodeTestExecutorOptions {
   
   /**
    * Test reporter to use
-   * @default "default"
+   * @default "spec"
    */
   reporter?: string;
   
@@ -100,7 +100,7 @@ export interface NodeTestExecutorOptions {
   
   /**
    * Default timeout of a test in milliseconds
-   * @default 5000
+   * @default none
    */
   testTimeout?: number;
   
@@ -168,7 +168,7 @@ export default async function runExecutor(
   
   try {
     // Determine if we should compile TypeScript
-    const shouldCompileTypeScript = options.enableTsc === true;
+    const shouldCompileTypeScript = options.useTsc === true;
     
     // If we're compiling TypeScript, prepare the output directory
     if (shouldCompileTypeScript) {
@@ -353,7 +353,7 @@ export default async function runExecutor(
     }
 
     // Set the test reporter
-    const reporter = options.reporter || 'default';
+    const reporter = options.reporter || 'spec';
     command += ` --test-reporter ${reporter}`;
     
     // Add experimental features if specified
@@ -415,23 +415,20 @@ export default async function runExecutor(
       command += ` ${options.additionalArgs}`;
     }
 
-    command += ` "${testFilesPath}"`;
-    
     if (options.verbose) {
-      console.log(`Executing node test runner using ${command}`);
+      console.log(`Executing node test runner using ${command} "${testFilesPath}"`);
     }
     
     // Split the command into parts for spawn
     const [cmd, ...args] = command.split(' ');
     
     return new Promise((resolve) => {
-      const childProcess = spawn(cmd, args, {
+      const childProcess = spawn(cmd, [...args, testFilesPath], {
         cwd: context.root,
         env: {
           ...process.env,
         },
-        stdio: 'inherit', // This will pipe output directly to parent process
-        shell: true
+        stdio: 'inherit' // This will pipe output directly to parent process
       });
       
       childProcess.on('close', (code) => {
