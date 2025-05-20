@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { spawn, execSync } from 'child_process';
 import { replaceTscAliasPaths } from 'tsc-alias';
+import { Glob } from 'glob';
 
 /**
  * Options for the Node.js test executor
@@ -404,6 +405,20 @@ export default async function runExecutor(
       const testPattern = options.testFiles || '**/*.test.{js,ts}';
       testFilesPath = path.join(context.root, projectRoot, testPattern);
     }
+
+    const filesAsync = new Glob(testFilesPath, {
+      absolute: true,
+      ignore: ['**/node_modules/**'],
+      nodir: true,
+    }).iterate();
+    
+    const files: string[] = [];
+    for await (const chunk of filesAsync) files.push(String(chunk));
+
+    if (files.length === 0) {
+      console.warn(`No test files found matching pattern: ${testFilesPath}`);
+      return { success: true };
+    }
     
     // Add test path pattern if specified
     if (options.testPathPattern) {
@@ -416,14 +431,14 @@ export default async function runExecutor(
     }
 
     if (options.verbose) {
-      console.log(`Executing node test runner using ${command} "${testFilesPath}"`);
+      console.log(`Executing node test runner using ${command} with files: ${files.join(', ')}`);
     }
     
     // Split the command into parts for spawn
     const [cmd, ...args] = command.split(' ');
     
     return new Promise((resolve) => {
-      const childProcess = spawn(cmd, [...args, testFilesPath], {
+      const childProcess = spawn(cmd, [...args, ...files], {
         cwd: context.root,
         env: {
           ...process.env,
