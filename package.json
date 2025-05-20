@@ -48,7 +48,7 @@
     "test": "echo \"No tests yet\""
   },
   "dependencies": {
-    "@simonegianni/node-test-jest-compat": ">=0.0.1",
+    "@simonegianni/node-test-jest-compat": "^0.0.3",
     "tsc-alias": "^1.8.0",
     "tsx": "^4.7.0",
     "tslib": "^2.6.0"
