@@ -5,10 +5,24 @@
   "title": "Node Test Executor",
   "description": "Runs tests using Node.js built-in test runner with TypeScript support and Jest compatibility",
   "properties": {
+    "loader": {
+      "type": "string",
+      "description": "Custom loader to use with node --test (uses --loader flag)"
+    },
+    "useTsLoader": {
+      "type": "boolean",
+      "description": "Whether to automatically use the built-in loader.mjs file from this module for inline TypeScript compilation and path resolution",
+      "default": false
+    },
     "useTsc": {
       "type": "boolean",
       "description": "Whether to enable TypeScript compilation (if disabled, tests will run directly from source)",
       "default": false
+    },
+    "useAlias": {
+      "type": "boolean",
+      "description": "Whether to use tsc-alias to resolve path aliases",
+      "default": true
     },
     "useTsx": {
       "type": "boolean",
@@ -41,11 +55,6 @@
       "type": "string",
       "description": "Path to tsconfig file",
       "default": "tsconfig.spec.json"
-    },
-    "useAlias": {
-      "type": "boolean",
-      "description": "Whether to use tsc-alias to resolve path aliases",
-      "default": true
     },
     "ignoreBuildErrors": {
       "type": "boolean",

@@ -1,6 +1,6 @@
 {
   "name": "@simonegianni/nx-nodejs-test-runner",
-  "version": "0.0.11",
+  "version": "0.0.13",
   "description": "Nx executor for running tests with Node.js built-in test runner with TypeScript support and Jest compatibility",
   "author": "Simone Gianni",
   "license": "Apache-2.0",
@@ -29,13 +29,15 @@
     },
     "./executors.json": "./executors.json",
     "./schema.json": "./schema.json",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./loader.mjs": "./loader.mjs"
   },
   "executors": "./executors.json",
   "files": [
     "dist",
     "executors.json",
     "schema.json",
+    "loader.mjs",
     "README.md",
     "LICENSE"
   ],
@@ -49,9 +51,12 @@
   },
   "dependencies": {
     "@simonegianni/node-test-jest-compat": "^0.0.3",
+    "glob": "^11.0.2",
+    "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.0",
-    "tsx": "^4.7.0",
-    "tslib": "^2.6.0"
+    "tsconfig-paths": "^4.2.0",
+    "tslib": "^2.6.0",
+    "tsx": "^4.7.0"
   },
   "devDependencies": {
     "@nx/devkit": "^18.0.0",

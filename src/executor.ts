@@ -10,6 +10,19 @@ import { Glob } from 'glob';
  */
 export interface NodeTestExecutorOptions {
   /**
+   * Custom loader to use with node --test
+   * Uses the --loader flag
+   */
+  loader?: string;
+  
+  /**
+   * Whether to automatically use the built-in loader.mjs file from this module
+   * for inline TypeScript compilation and path resolution
+   * @default false
+   */
+  useTsLoader?: boolean;
+  
+  /**
    * Whether to enable TypeScript compilation
    * If disabled, tests will run directly from source
    * @default false
@@ -338,6 +351,16 @@ export default async function runExecutor(
       command += ' --enable-source-maps';
     }
     
+    // Add loader if specified or if useTsLoader is true
+    if (options.useTsLoader === true) {
+      // Use the built-in loader.mjs file from this module
+      const loaderPath = '@simonegianni/nx-nodejs-test-runner/loader.mjs';
+      command += ` --loader ${loaderPath}`;
+    } else if (options.loader) {
+      // Use the custom loader specified by the user
+      command += ` --loader ${options.loader}`;
+    }
+    
     // Add test command
     command += ' --test';
     
@@ -442,6 +465,8 @@ export default async function runExecutor(
         cwd: context.root,
         env: {
           ...process.env,
+          TS_NODE_PROJECT: fullTsConfigPath,
+          TS_NODE_TRANSPILE_ONLY: options.ignoreBuildErrors ? "1" : "0",
         },
         stdio: 'inherit' // This will pipe output directly to parent process
       });

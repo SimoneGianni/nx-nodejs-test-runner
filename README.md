@@ -68,10 +68,12 @@ nx test my-package
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
+| `useTsLoader` | boolean | `false` | Whether to automatically use the built-in loader.mjs file from this module for inline TypeScript compilation and path resolution |
 | `useTsc` | boolean | `false` | Whether to enable TypeScript compilation (if disabled, tests will run directly from source) |
 | `useTsx` | boolean | `true` | Whether to use tsx instead of node for running TypeScript tests directly (recommended for most projects unless esbuild limitations require tsc) |
 | `enableJestCompat` | boolean | `true` | Whether to enable Jest compatibility via @simonegianni/node-test-jest-compat (uses `--import @simonegianni/node-test-jest-compat`) |
 | `imports` | string[] | | Additional modules to import before running tests (uses `--import` for each module) |
+| `loader` | string | | Custom loader to use with node --test (uses --loader flag) |
 | `reporter` | string | `spec` | Test reporter to use (e.g., 'default', 'spec', 'tap', 'dot', or a path to a custom reporter) (uses `--test-reporter`) |
 | `testFiles` | string | `**/*.test.{js,ts}` | Glob pattern for test files |
 | `tsConfig` | string | `tsconfig.spec.json` | Path to tsconfig file |
@@ -97,30 +99,28 @@ This executor provides several key features to enhance your testing experience:
 
 ### TypeScript Support
 
-This executor provides three ways to run TypeScript tests:
+This executor provides several ways to run TypeScript tests, offering a balance between speed and compatibility:
 
-1. **Using tsx (Recommended)**: By default, the executor uses [tsx](https://github.com/privatenumber/tsx) to run TypeScript tests directly (`useTsx: true`). This is powered by esbuild, which is much faster than traditional TypeScript compilation and works for most projects. It handles TypeScript files, path aliases, and other TypeScript features out of the box.
+1. **Using tsx (Recommended for most projects)**: By default, the executor uses [tsx](https://github.com/privatenumber/tsx) to run TypeScript tests directly (`useTsx: true`). This is powered by esbuild, which is much faster than traditional TypeScript compilation and works for most projects. It handles TypeScript files, path aliases, and other TypeScript features out of the box.
 
-2. **Using TypeScript Compilation**: If you enable TypeScript compilation (`useTsc: true`), the executor will:
+   However, tsx (esbuild) does not support decorator metadata, which is required by some frameworks like NestJS or TypeORM.
+
+2. **Using the built-in TypeScript loader**: If you need decorator metadata support, you can enable the built-in loader (`useTsLoader: true`). This uses a custom loader that:
+   - Provides proper TypeScript path resolution
+   - Supports decorator metadata
+   - Handles ESM imports correctly
+   - Maps imports to proper TypeScript aliases
+
+This uses ts-node to compile TypeScript files on the fly, which takes quite some time for large projects. 
+
+3. **Using TypeScript Compilation (Fallback)**: If the above options don't work for your project, you can enable full TypeScript compilation (`useTsc: true`). The executor will:
    - Compile your TypeScript tests using the specified tsconfig
    - Resolve path aliases using tsc-alias (if enabled)
    - Run the compiled JavaScript tests from the output directory
    
-This approach is slower but may be necessary if your project has TypeScript features that esbuild cannot handle, like certain decorators or advanced type features.
-The compiled tests will be placed in the `outputDir` specified in the options.
+   This approach provides the most compatibility for complex TypeScript projects. The compiled tests will be placed in the `outputDir` specified in the options, which makes it also possible to inspect the compiled code.
 
-
-3. **Using a Custom Loader**: If you disable both tsx and TypeScript compilation (`useTsc: false`, `useTsx: false`), you can use the `imports` option to specify a TypeScript loader like `ts-node/register`:
-
-   ```json
-   {
-     "imports": ["ts-node/register"]
-   }
-   ```
-
-   However, this approach has various limitations and may not work depending on your setup.
-
-We recommend using tsx (the default) for most projects, as it provides the best balance of speed and compatibility.
+4. **Custom approach**: For other special requirements or backward compatibility, you can still use the `imports` option to specify a TypeScript loader like `ts-node/register` or the `loader` option to specify a custom loader. 
 
 ### Jest Compatibility (Optional)
 
@@ -164,23 +164,6 @@ You can also specify a path to a custom reporter module.
 }
 ```
 
-### With TypeScript Compilation Enabled
-
-```json
-{
-  "targets": {
-    "test": {
-      "executor": "@simonegianni/nx-nodejs-test-runner:nodejs-test",
-      "options": {
-        "useTsc": true,
-        "tsConfig": "packages/my-package/tsconfig.spec.json",
-        "testFiles": "**/*.test.ts"
-      }
-    }
-  }
-}
-```
-
 ### Using tsx for TypeScript Tests (Recommended)
 
 ```json
@@ -198,7 +181,7 @@ You can also specify a path to a custom reporter module.
 }
 ```
 
-### With Custom Reporter
+### With TypeScript Compilation Enabled
 
 ```json
 {
@@ -206,8 +189,9 @@ You can also specify a path to a custom reporter module.
     "test": {
       "executor": "@simonegianni/nx-nodejs-test-runner:nodejs-test",
       "options": {
-        "reporter": "tap",
-        "tsConfig": "packages/my-package/tsconfig.spec.json"
+        "useTsc": true,
+        "tsConfig": "packages/my-package/tsconfig.spec.json",
+        "testFiles": "**/*.test.ts"
       }
     }
   }
@@ -230,7 +214,7 @@ You can also specify a path to a custom reporter module.
 }
 ```
 
-### Without Jest Compatibility
+### Using the Built-in TypeScript Loader (for Decorator Metadata Support)
 
 ```json
 {
@@ -238,40 +222,10 @@ You can also specify a path to a custom reporter module.
     "test": {
       "executor": "@simonegianni/nx-nodejs-test-runner:nodejs-test",
       "options": {
-        "enableJestCompat": false,
-        "tsConfig": "packages/my-package/tsconfig.spec.json"
-      }
-    }
-  }
-}
-```
-
-### With Coverage
-
-```json
-{
-  "targets": {
-    "test": {
-      "executor": "@simonegianni/nx-nodejs-test-runner:nodejs-test",
-      "options": {
+        "useTsLoader": true,
+        "useTsx": false,
         "tsConfig": "packages/my-package/tsconfig.spec.json",
-        "coverage": true
-      }
-    }
-  }
-}
-```
-
-### With Test Filtering
-
-```json
-{
-  "targets": {
-    "test": {
-      "executor": "@simonegianni/nx-nodejs-test-runner:nodejs-test",
-      "options": {
-        "tsConfig": "packages/my-package/tsconfig.spec.json",
-        "testNamePattern": "should handle errors"
+        "testFiles": "**/*.test.ts"
       }
     }
   }
